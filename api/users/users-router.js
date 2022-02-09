@@ -13,7 +13,7 @@ router.get('/', (req, res, next) => {
   // RETURN AN ARRAY WITH ALL THE USERS
   Users.get()
     .then(users => {
-      res.status(200).json(users);
+      res.json(users);
     })
     .catch(next);
 });
@@ -24,15 +24,25 @@ router.get('/:id', validateUserId, (req, res) => {
   res.json(req.user);
 });
 
-router.post('/', validateUser, (req, res) => {
+router.post('/', validateUser, (req, res, next) => {
   // RETURN THE NEWLY CREATED USER OBJECT
   // this needs a middleware to check that the request body is valid
+  Users.insert(req.body)
+    .then(newUser => {
+      res.status(201).json(newUser);
+    })
+    .catch(next);
 });
 
-router.put('/:id', validateUserId, validateUser, (req, res) => {
+router.put('/:id', validateUserId, validateUser, (req, res, next) => {
   // RETURN THE FRESHLY UPDATED USER OBJECT
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
+  Users.update(req.params.id, req.body)
+    .then(updatedUser => {
+      res.json(updatedUser);
+    })
+    .catch(next);
 });
 
 router.delete('/:id', validateUserId, (req, res) => {
